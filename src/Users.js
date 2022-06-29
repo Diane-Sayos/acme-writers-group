@@ -1,24 +1,28 @@
 import React from 'react';
+import UserForm from './User-Form';
 
-
-const Users = ({ users, userId })=> {
+const Users = ({ users, userId, userCreated, userDeleted })=> {
   return (
-    <ul>
-      <li className={ !userId ? 'selected': ''}>
-        <a href='#'>Users</a>
-      </li>
-      {
-        users.map( user => {
-          return (
-            <li className={ user.id === userId*1 ? 'selected': ''} key={ user.id }>
-              <a href={`#${user.id}`}>
-                { user.name }
-              </a>
-            </li>
-          );
-        })
-      }
-    </ul>
+    <section>
+      <div>
+        <h2 className={ !userId ? 'selected': ''}><a href='#'>Users</a></h2>
+        <UserForm userCreated={ userCreated } />
+        <ul>
+          {
+            users.map( user => {
+              return (
+                <li className={ user.id === userId*1 ? 'selected': ''} key={ user.id }>
+                  <a href={`#${user.id}`}>
+                  { user.name }<br/>
+                  <button onClick={()=> userDeleted(user)}>x</button>
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </div>
+    </section>
   );
 }
 

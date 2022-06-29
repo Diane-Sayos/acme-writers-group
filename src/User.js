@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import StoriesList from './Stories';
+import StoryForm from './Story-Form';
 
 class User extends Component{
   constructor(){
@@ -8,6 +10,9 @@ class User extends Component{
       user: {},
       stories: [] 
     };
+    this.storyDeleted = this.storyDeleted.bind(this);
+    this.storyCreated = this.storyCreated.bind(this);
+    this.updateFavorite = this.updateFavorite.bind(this);
   }
   async componentDidMount(){
     let response = await axios.get(`/api/users/${this.props.userId}`);
@@ -25,35 +30,57 @@ class User extends Component{
       
     }
   }
+  async storyCreated(inputs){
+    console.log(inputs)
+    const response = await axios.post(`/api/users/${this.props.userId}/stories`, inputs);
+    const createdStory = response.data;
+    const updatedStories = [...this.state.stories, createdStory];
+    this.setState({stories: updatedStories});
+    console.log(this.state.stories)
+  }
+  async storyDeleted(story){
+    await axios.delete(`/api/stories/${story.id}`);
+    const updatedStories = this.state.stories.filter(el => el.id !== story.id);
+    this.setState({stories: updatedStories})
+  }
+  async updateFavorite(story){
+    if(story.favorite === true){
+      story.favorite = false
+    } else {
+      story.favorite = true
+    }
+    await axios.put(`/api/stories/${story.id}`, {
+      favorite: story.favorite
+    });
+    // const updatedStory = await axios.get(`/api/stories/${story.id}`);
+    const updatedStory = this.state.stories.map(_story => {
+      if(Object.is(_story.id, story.id)){
+        _story = story;
+        return _story;
+      }
+      return _story;
+    })
+    this.setState({stories: updatedStory});
+    console.log(this.state.stories)
+  }
   render(){
     const { user, stories } = this.state;
-    console.log(stories);
+    const { storyDeleted, storyCreated, updateFavorite } = this;
     return (
-      <div>
-        Details for { user.name }
-        <p>
-          { user.bio }
-        </p>
-        <ul>
-          {
-            stories.map( story => {
-              return (
-                <li key={ story.id }>
-                  { story.title }
-                  <p>
-                  { story.body }
-                  </p>
-                </li>
-
-              );
-            })
-          }
-        </ul>
-      </div>
+      <section>
+        <div>
+          <button><a href='#'>Go Back to Users</a></button>
+          <h2>Details for { user.name }</h2>
+          <h3>{ user.name }'s Bio:</h3>
+          <p>
+            { user.bio }
+          </p>
+          <StoryForm storyCreated={ storyCreated }/>
+          <StoriesList Stories={ stories } deleteStory={ storyDeleted } updateFavorite={ updateFavorite } />
+        </div>
+      </section>
     );
   }
 }
-
-
 
 export default User;

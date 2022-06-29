@@ -2,14 +2,14 @@ var pgtools = require("pgtools");
 const config = {
     user: process.env.USER || "postgress",
     host: process.env.HOST || "localhost",
-    password: process.env.PASSWORD || "",
+    password: process.env.PASSWORD || '1111',
     port: process.env.PORT || 5432
 }
 
 const { db, User, Story } = require('./db');
 const { USERS, STORIES } = require("./seed-data");
 
-(async function seedDatabase() {
+async function seedDatabase() {
     try {
         await pgtools.dropdb(config, 'acme-writers-group', function(err, res){
             if(err){
@@ -35,4 +35,8 @@ const { USERS, STORIES } = require("./seed-data");
     catch(e){
         console.warn(`Something went wrong. ${e}`)
     }
-})();
+};
+
+module.exports = {
+    seedDatabase
+}

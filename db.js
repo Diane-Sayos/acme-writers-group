@@ -22,6 +22,14 @@ const Story = db.define('stories', {
     },
     favorite: {
         type: Sequelize.BOOLEAN
+    },
+    isTrue:{
+        type: Sequelize.VIRTUAL,
+        get: function(){
+            if(this.favorite === true){
+                return '☆';
+            }
+        }
     }
 })
 
